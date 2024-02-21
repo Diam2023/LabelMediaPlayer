@@ -1,0 +1,16 @@
+//
+// Created by 35691 on 2/21/2024.
+//
+
+#ifndef LABELMEDIAPLAYER_FILEDIALOG_H
+#define LABELMEDIAPLAYER_FILEDIALOG_H
+
+
+
+class FileDialog {
+
+};
+
+
+
+#endif //LABELMEDIAPLAYER_FILEDIALOG_H

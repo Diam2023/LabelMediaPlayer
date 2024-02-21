@@ -1,0 +1,16 @@
+//
+// Created by 35691 on 2/16/2024.
+//
+
+#ifndef LABELMEDIAPLAYER_ABOUTSCENE_H
+#define LABELMEDIAPLAYER_ABOUTSCENE_H
+
+
+
+class AboutScene {
+
+};
+
+
+
+#endif //LABELMEDIAPLAYER_ABOUTSCENE_H

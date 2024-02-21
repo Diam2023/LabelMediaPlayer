@@ -27,7 +27,7 @@ cmake_minimum_required(VERSION 3.10)
 
 set(APP_NAME LabelMediaPlayer)
 
-project(${APP_NAME})
+project(${APP_NAME} VERSION 1.0.0)
 
 if(NOT DEFINED BUILD_ENGINE_DONE) # to test LabelMediaPlayer into root project
     if(XCODE)
