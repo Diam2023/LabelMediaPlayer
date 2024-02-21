@@ -1,6 +1,7 @@
 #pragma once
 
 #include "axmol.h"
+#include "ui/axmol-ui.h"
 
 class MainScene : public ax::Scene {
     enum class GameState {
@@ -41,6 +42,10 @@ public:
     // a selector callback
     void menuCloseCallback(Ref *sender);
 
+    void selectMediaSource();
+
 private:
     GameState _gameState = GameState::init;
+
+    ax::ui::MediaPlayer *_mediaPlayer = nullptr;
 };

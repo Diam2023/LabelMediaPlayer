@@ -1,6 +1,14 @@
 #include "MainScene.h"
 
+#include "ui/axmol-ui.h"
+
+#include "FileDialog.h"
+
+#include <iostream>
+
 USING_NS_AX;
+
+using namespace ax::ui;
 
 // Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char *filename) {
@@ -23,6 +31,32 @@ bool MainScene::init() {
     auto safeArea = _director->getSafeAreaRect();
     auto safeOrigin = safeArea.origin;
 
+    if (_mediaPlayer == nullptr) {
+        _mediaPlayer = MediaPlayer::create();
+        _mediaPlayer->setContentSize(visibleSize);
+
+        float x = safeOrigin.x + safeArea.size.width - _mediaPlayer->getContentSize().width / 2;
+        float y = safeOrigin.y + _mediaPlayer->getContentSize().height / 2;
+        _mediaPlayer->setPosition({x, y});
+    }
+
+    if (FileDialog::getInstance().init()) {
+        if (FileDialog::getInstance().show()) {
+            auto res = FileDialog::getInstance().getSelectedResult();
+            if (!res.empty()) {
+                _mediaPlayer->setFileName(res[0]);
+                std::cout << "Success Set FileName" << std::endl;
+            }
+            FileDialog::getInstance().clear();
+        } else {
+            std::cout << "FileDialog::show() Error" << std::endl;
+
+        }
+    } else {
+        std::cout << "FileDialog::init() Error" << std::endl;
+    }
+
+
     /////////////////////////////
     // 2. add a menu item with "X" image, which is clicked to quit the program
     //    you may modify it.
@@ -39,15 +73,14 @@ bool MainScene::init() {
         closeItem->setPosition(Vec2(x, y));
     }
 
+    this->addChild(_mediaPlayer, 1);
+
+
     // create menu, it's an autorelease object
     auto menu = Menu::create(closeItem, NULL);
     menu->setPosition(Vec2::ZERO);
     this->addChild(menu, 1);
 
-    /////////////////////////////
-    // 3. add your codes below...
-
-    // Some templates (uncomment what you  need)
     auto touchListener = EventListenerTouchAllAtOnce::create();
     touchListener->onTouchesBegan = AX_CALLBACK_2(MainScene::onTouchesBegan, this);
     touchListener->onTouchesMoved = AX_CALLBACK_2(MainScene::onTouchesMoved, this);
@@ -61,43 +94,46 @@ bool MainScene::init() {
     //mouseListener->onMouseScroll = AX_CALLBACK_1(MainScene::onMouseScroll, this);
     //_eventDispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
 
-    //auto keyboardListener           = EventListenerKeyboard::create();
-    //keyboardListener->onKeyPressed  = AX_CALLBACK_2(MainScene::onKeyPressed, this);
-    //keyboardListener->onKeyReleased = AX_CALLBACK_2(MainScene::onKeyReleased, this);
-    //_eventDispatcher->addEventListenerWithFixedPriority(keyboardListener, 11);
+    auto keyboardListener = EventListenerKeyboard::create();
+    keyboardListener->onKeyPressed = AX_CALLBACK_2(MainScene::onKeyPressed, this);
+    keyboardListener->onKeyReleased = AX_CALLBACK_2(MainScene::onKeyReleased, this);
+    _eventDispatcher->addEventListenerWithFixedPriority(keyboardListener, 11);
+
+//    auto mediaPlayer = MediaPlayer::create();
 
 
+    // Audio Stop Callback
 
     // add a label shows "Hello World"
     // create and initialize a label
 
-    auto label = Label::createWithTTF("Hello World", "fonts/Marker Felt.ttf", 24);
-    if (label == nullptr) {
-        problemLoading("'fonts/Marker Felt.ttf'");
-    } else {
-        // position the label on the center of the screen
-        label->setPosition(
-                Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height - label->getContentSize().height));
-
-        // add the label as a child to this layer
-        this->addChild(label, 1);
-    }
+//    auto label = Label::createWithTTF("Hello World", "fonts/Marker Felt.ttf", 24);
+//    if (label == nullptr) {
+//        problemLoading("'fonts/Marker Felt.ttf'");
+//    } else {
+//        // position the label on the center of the screen
+//        label->setPosition(
+//                Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height - label->getContentSize().height));
+//
+//        // add the label as a child to this layer
+//        this->addChild(label, 1);
+//    }
     // add "HelloWorld" splash screen"
-    auto sprite = Sprite::create("HelloWorld.png"sv);
-    if (sprite == nullptr) {
-        problemLoading("'HelloWorld.png'");
-    } else {
-        // position the sprite on the center of the screen
-        sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-
-        // add the sprite as a child to this layer
-        this->addChild(sprite, 0);
-        auto drawNode = DrawNode::create();
-        drawNode->setPosition(Vec2(0, 0));
-        addChild(drawNode);
-
-        drawNode->drawRect(safeArea.origin + Vec2(1, 1), safeArea.origin + safeArea.size, Color4F::BLUE);
-    }
+//    auto sprite = Sprite::create("HelloWorld.png"sv);
+//    if (sprite == nullptr) {
+//        problemLoading("'HelloWorld.png'");
+//    } else {
+//        // position the sprite on the center of the screen
+//        sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+//
+//        // add the sprite as a child to this layer
+//        this->addChild(sprite, 0);
+//        auto drawNode = DrawNode::create();
+//        drawNode->setPosition(Vec2(0, 0));
+//        addChild(drawNode);
+//
+//        drawNode->drawRect(safeArea.origin + Vec2(1, 1), safeArea.origin + safeArea.size, Color4F::BLUE);
+//    }
 
     // scheduleUpdate() is required to ensure update(float) is called on every loop
     scheduleUpdate();
@@ -156,6 +192,7 @@ void MainScene::update(float delta) {
     switch (_gameState) {
         case GameState::init: {
             _gameState = GameState::update;
+            _mediaPlayer->play();
             break;
         }
 
