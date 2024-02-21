@@ -6,11 +6,9 @@
 #define LABELMEDIAPLAYER_SETTING_H
 
 
-
 class Setting {
 
 };
-
 
 
 #endif //LABELMEDIAPLAYER_SETTING_H
